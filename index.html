@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <img src="img/kusanali.jpg" />
+    <canvas id="audioCanvas"></canvas>
+  </body>
+</html>
+
+<script>
+  // color
+  let canvas = document.getElementById("audioCanvas");
+  let ctx = canvas.getContext("2d");
+  let gradient = ctx.createLinearGradient(0, 0, 0, 170);
+  gradient.addColorStop(0, "black");
+  gradient.addColorStop(1, "white");
+
+  // init audio
+  let audioCanvas = null;
+  let audioCanvasCtx = null;
+  function wallpaperAudioListener(audioArray) {
+    // Clear the canvas and set it to black
+    audioCanvasCtx.fillStyle = gradient;
+    audioCanvasCtx.fillRect(0, 0, audioCanvas.width, audioCanvas.height);
+
+    // Render bars along the full width of the canvas
+    var barWidth = Math.round((1.0 / 128.0) * audioCanvas.width);
+    var halfCount = audioArray.length / 2;
+
+    // Begin with the left channel in red
+    audioCanvasCtx.fillStyle = gradient;
+    // Iterate over the first 64 array elements (0 - 63) for the left channel audio data
+    for (var i = 0; i < halfCount; ++i) {
+      // Create an audio bar with its hight depending on the audio volume level of the current frequency
+      var height = audioCanvas.height * Math.min(audioArray[i], 1);
+      audioCanvasCtx.fillRect(
+        barWidth * i,
+        audioCanvas.height - height,
+        barWidth,
+        height
+      );
+    }
+  }
+  window.wallpaperRegisterAudioListener(wallpaperAudioListener);
+</script>
+
+<style>
+  body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  canvas {
+    position: absolute;
+    width: 100%;
+    height: 20%;
+    z-index: 1;
+  }
+</style>
